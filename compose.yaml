@@ -12,9 +12,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-      # Optional: drop SQL / scripts here to initialize DB on first run:
-      # - ./init-postgres:/docker-entrypoint-initdb.d:ro
+      # Mount init SQL and CSV into the Postgres entrypoint init directory
+      - ./init_postgres.sql:/docker-entrypoint-initdb.d/01_init_postgres.sql:ro
+      - ./data/wine_food_pairings.csv:/docker-entrypoint-initdb.d/wine_food_pairings.csv:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pguser -d pgdatabase"]
       interval: 10s
