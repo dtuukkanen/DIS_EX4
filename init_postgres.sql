@@ -32,7 +32,7 @@ CREATE TABLE red_wines (
     description TEXT
 );
 
-CREATE TABLE dessert_wines (
+CREATE TABLE sauternes_wines (
     id SERIAL PRIMARY KEY,
     wine_type TEXT,
     food_item TEXT,
@@ -84,9 +84,9 @@ INSERT INTO red_wines (wine_type,food_item,food_category,cuisine,pairing_quality
 SELECT wine_type,food_item,food_category,cuisine,pairing_quality,quality_label,description
 FROM staging WHERE wine_category = 'Red';
 
-INSERT INTO dessert_wines (wine_type,food_item,food_category,cuisine,pairing_quality,quality_label,description)
+INSERT INTO sauternes_wines (wine_type,food_item,food_category,cuisine,pairing_quality,quality_label,description)
 SELECT wine_type,food_item,food_category,cuisine,pairing_quality,quality_label,description
-FROM staging WHERE wine_category = 'Dessert' AND wine_type <> 'Ice Wine'; /* wine_type = 'Sauternes', works too */
+FROM staging WHERE wine_category = 'Dessert' AND wine_type = 'Sauternes';
 
 INSERT INTO rose_wines (wine_type,food_item,food_category,cuisine,pairing_quality,quality_label,description)
 SELECT wine_type,food_item,food_category,cuisine,pairing_quality,quality_label,description
