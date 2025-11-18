@@ -1,17 +1,16 @@
-version: "3.8"
-
 services:
   postgres:
-    image: postgres:15
+    image: postgres:latest
     container_name: postgres-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: pguser
       POSTGRES_PASSWORD: pgpassword
-      POSTGRES_DB: pgdatabase
+      POSTGRES_DB: wine_db
     ports:
       - "5432:5432"
     volumes:
+      - postgres-data:/var/lib/postgresql/data
       # Mount init SQL and CSV into the Postgres entrypoint init directory
       - ./init_postgres.sql:/docker-entrypoint-initdb.d/01_init_postgres.sql:ro
       - ./data/wine_food_pairings.csv:/docker-entrypoint-initdb.d/wine_food_pairings.csv:ro
@@ -22,24 +21,22 @@ services:
       retries: 5
 
   mongo:
-    image: mongo:6
+    image: mongo:latest
     container_name: mongo-db
     restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: mongoroot
-      MONGO_INITDB_ROOT_PASSWORD: mongopassword
-      MONGO_INITDB_DATABASE: modb
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-      # Optional: drop JS/.js/.sh init scripts here to run once on first start:
-      # - ./init-mongo:/docker-entrypoint-initdb.d:ro
+      - ./data/wine_food_pairings.csv:/data/wine_food_pairings.csv:ro
+      - ./import-data.sh:/docker-entrypoint-initdb.d/00-import-data.sh:ro
+      - ./init_db_mongo.js:/docker-entrypoint-initdb.d/01-init.js:ro
     healthcheck:
-      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')", "-u", "mongoroot", "-p", "mongopassword", "--authenticationDatabase", "admin"]
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping').ok"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 5
+      start_period: 10s
 
 volumes:
   postgres-data:
