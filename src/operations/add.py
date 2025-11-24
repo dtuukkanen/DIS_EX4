@@ -208,7 +208,13 @@ class AddOperations:
             restaurant_id = input("Restaurant ID: ")
             name = input("Promotion name: ")
             description = input("Description: ")
-            discount = int(input("Discount percentage: "))
+            while True:
+                discount_input = input("Discount percentage: ")
+                if discount_input.isdigit():
+                    discount = int(discount_input)
+                    break
+                else:
+                    print("Please enter a valid integer for the discount percentage.")
 
             promo_doc = {
                 "promotion_id": promo_id,
