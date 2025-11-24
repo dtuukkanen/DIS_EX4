@@ -122,7 +122,13 @@ class AddOperations:
         restaurant_id = input("Restaurant ID: ")
         name = input("Item name: ")
         category = input("Category: ")
-        price = float(input("Price: "))
+        while True:
+            price_input = input("Price: ")
+            try:
+                price = float(price_input)
+                break
+            except ValueError:
+                print("Invalid price. Please enter a numeric value.")
         description = input("Description: ")
         available = input("Available? (yes/no): ").lower() == 'yes'
 
