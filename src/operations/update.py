@@ -183,7 +183,13 @@ class UpdateOperations:
         field_choice = input("Select: ")
 
         if field_choice == '1':
-            new_discount = int(input("New discount percentage: "))
+            while True:
+                discount_input = input("New discount percentage: ")
+                if discount_input.isdigit():
+                    new_discount = int(discount_input)
+                    break
+                else:
+                    print("Please enter a valid numeric discount percentage.")
             try:
                 result = self.db.mongo_db.promotions.update_one(
                     {"promotion_id": promo_id},
