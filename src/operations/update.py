@@ -37,21 +37,42 @@ class UpdateOperations:
                 except ValueError:
                     print("Invalid input. Please enter a numeric value for the total amount.")
             # Update in both databases
+            cur = None
+            old_total = None
             try:
+                # First, get the old value for potential rollback
                 cur = self.db.postgres_conn.cursor()
+                cur.execute("SELECT total_amount FROM orders WHERE order_id = %s", (order_id,))
+                row = cur.fetchone()
+                if row:
+                    old_total = row[0]
+                
+                # Update PostgreSQL
                 cur.execute("UPDATE orders SET total_amount = %s WHERE order_id = %s",
                            (new_total, order_id))
                 self.db.postgres_conn.commit()
-                cur.close()
                 print(f"✓ Order {order_id} total updated in main system")
 
-                self.db.mongo_db.orders.update_one(
-                    {"order_id": order_id},
-                    {"$set": {"total_amount": new_total}}
-                )
-                print(f"✓ Order {order_id} total updated in analytics")
+                # Try to update MongoDB
+                try:
+                    self.db.mongo_db.orders.update_one(
+                        {"order_id": order_id},
+                        {"$set": {"total_amount": new_total}}
+                    )
+                    print(f"✓ Order {order_id} total updated in analytics")
+                except Exception as mongo_error:
+                    # Rollback PostgreSQL if MongoDB update fails
+                    if old_total is not None:
+                        cur.execute("UPDATE orders SET total_amount = %s WHERE order_id = %s",
+                                   (old_total, order_id))
+                        self.db.postgres_conn.commit()
+                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                    raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
+            finally:
+                if cur:
+                    cur.close()
 
     def update_customer(self):
         """Update customer info"""
@@ -63,38 +84,80 @@ class UpdateOperations:
 
         if field_choice == '1':
             new_email = input("New email: ")
+            cur = None
+            old_email = None
             try:
+                # First, get the old value for potential rollback
                 cur = self.db.postgres_conn.cursor()
+                cur.execute("SELECT email FROM customers WHERE customer_id = %s", (customer_id,))
+                row = cur.fetchone()
+                if row:
+                    old_email = row[0]
+                
+                # Update PostgreSQL
                 cur.execute("UPDATE customers SET email = %s WHERE customer_id = %s",
                            (new_email, customer_id))
                 self.db.postgres_conn.commit()
-                cur.close()
 
-                self.db.mongo_db.customers.update_one(
-                    {"customer_id": customer_id},
-                    {"$set": {"email": new_email}}
-                )
-                print(f"✓ Customer {customer_id} email updated")
+                # Try to update MongoDB
+                try:
+                    self.db.mongo_db.customers.update_one(
+                        {"customer_id": customer_id},
+                        {"$set": {"email": new_email}}
+                    )
+                    print(f"✓ Customer {customer_id} email updated")
+                except Exception as mongo_error:
+                    # Rollback PostgreSQL if MongoDB update fails
+                    if old_email is not None:
+                        cur.execute("UPDATE customers SET email = %s WHERE customer_id = %s",
+                                   (old_email, customer_id))
+                        self.db.postgres_conn.commit()
+                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                    raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
+            finally:
+                if cur:
+                    cur.close()
 
 
         elif field_choice == '2':
             new_phone = input("New phone: ")
+            cur = None
+            old_phone = None
             try:
+                # First, get the old value for potential rollback
                 cur = self.db.postgres_conn.cursor()
+                cur.execute("SELECT phone FROM customers WHERE customer_id = %s", (customer_id,))
+                row = cur.fetchone()
+                if row:
+                    old_phone = row[0]
+                
+                # Update PostgreSQL
                 cur.execute("UPDATE customers SET phone = %s WHERE customer_id = %s",
                            (new_phone, customer_id))
                 self.db.postgres_conn.commit()
-                cur.close()
 
-                self.db.mongo_db.customers.update_one(
-                    {"customer_id": customer_id},
-                    {"$set": {"phone": new_phone}}
-                )
-                print(f"✓ Customer {customer_id} phone updated")
+                # Try to update MongoDB
+                try:
+                    self.db.mongo_db.customers.update_one(
+                        {"customer_id": customer_id},
+                        {"$set": {"phone": new_phone}}
+                    )
+                    print(f"✓ Customer {customer_id} phone updated")
+                except Exception as mongo_error:
+                    # Rollback PostgreSQL if MongoDB update fails
+                    if old_phone is not None:
+                        cur.execute("UPDATE customers SET phone = %s WHERE customer_id = %s",
+                                   (old_phone, customer_id))
+                        self.db.postgres_conn.commit()
+                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                    raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
+            finally:
+                if cur:
+                    cur.close()
 
         elif field_choice == '3':
             while True:
@@ -169,38 +232,79 @@ class UpdateOperations:
                 except ValueError:
                     print("Invalid price. Please enter a numeric value.")
             # Update in both databases
+            cur = None
+            old_price = None
             try:
+                # First, get the old value for potential rollback
                 cur = self.db.postgres_conn.cursor()
+                cur.execute("SELECT price FROM menu_items WHERE item_id = %s", (item_id,))
+                row = cur.fetchone()
+                if row:
+                    old_price = row[0]
+                
+                # Update PostgreSQL
                 cur.execute("UPDATE menu_items SET price = %s WHERE item_id = %s",
                            (new_price, item_id))
                 self.db.postgres_conn.commit()
-                cur.close()
 
-                self.db.mongo_db.menu_items.update_one(
-                    {"item_id": item_id},
-                    {"$set": {"price": new_price}}
-                )
-                print(f"✓ Menu item {item_id} price updated in both databases")
+                # Try to update MongoDB
+                try:
+                    self.db.mongo_db.menu_items.update_one(
+                        {"item_id": item_id},
+                        {"$set": {"price": new_price}}
+                    )
+                    print(f"✓ Menu item {item_id} price updated in both databases")
+                except Exception as mongo_error:
+                    # Rollback PostgreSQL if MongoDB update fails
+                    if old_price is not None:
+                        cur.execute("UPDATE menu_items SET price = %s WHERE item_id = %s",
+                                   (old_price, item_id))
+                        self.db.postgres_conn.commit()
+                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                    raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
+            finally:
+                if cur:
+                    cur.close()
 
         elif field_choice == '2':
             available = input("Available? (yes/no): ").lower() == 'yes'
+            cur = None
+            old_available = None
             try:
+                # First, get the old value for potential rollback
                 cur = self.db.postgres_conn.cursor()
+                cur.execute("SELECT available FROM menu_items WHERE item_id = %s", (item_id,))
+                row = cur.fetchone()
+                if row:
+                    old_available = row[0]
+                
+                # Update PostgreSQL
                 cur.execute("UPDATE menu_items SET available = %s WHERE item_id = %s",
                            (available, item_id))
                 self.db.postgres_conn.commit()
-                cur.close()
 
-                self.db.mongo_db.menu_items.update_one(
-                    {"item_id": item_id},
-                    {"$set": {"available": available}}
-                )
-                print(f"✓ Menu item {item_id} availability updated in both databases")
+                # Try to update MongoDB
+                try:
+                    self.db.mongo_db.menu_items.update_one(
+                        {"item_id": item_id},
+                        {"$set": {"available": available}}
+                    )
+                    print(f"✓ Menu item {item_id} availability updated in both databases")
+                except Exception as mongo_error:
+                    # Rollback PostgreSQL if MongoDB update fails
+                    if old_available is not None:
+                        cur.execute("UPDATE menu_items SET available = %s WHERE item_id = %s",
+                                   (old_available, item_id))
+                        self.db.postgres_conn.commit()
+                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                    raise mongo_error
             except Exception as e:
-                self.db.postgres_conn.rollback()
                 print(f"Error: {e}")
+            finally:
+                if cur:
+                    cur.close()
 
     def update_promotion(self):
         """Update promotion (MongoDB only)"""
