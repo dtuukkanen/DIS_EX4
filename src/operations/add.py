@@ -19,7 +19,13 @@ class AddOperations:
         order_id = input("Order ID (e.g., O009): ")
         customer_id = input("Customer ID (e.g., C001): ")
         restaurant_id = input("Restaurant ID (e.g., R001): ")
-        total = float(input("Total amount: "))
+        while True:
+            total_input = input("Total amount: ")
+            try:
+                total = float(total_input)
+                break
+            except ValueError:
+                print("Invalid input. Please enter a numeric value for the total amount.")
 
         if choice == '1' or choice == '2':
             # Add to PostgreSQL
