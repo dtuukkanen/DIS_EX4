@@ -52,8 +52,6 @@ class UpdateOperations:
                 print(f"✓ Order {order_id} total updated in analytics")
             except Exception as e:
                 print(f"Error: {e}")
-            except Exception as e:
-                print(f"Error: {e}")
 
     def update_customer(self):
         """Update customer info"""
