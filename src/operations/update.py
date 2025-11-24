@@ -154,8 +154,6 @@ class UpdateOperations:
                 print(f"✓ Menu item {item_id} price updated in both databases")
             except Exception as e:
                 print(f"Error: {e}")
-            except Exception as e:
-                print(f"Error: {e}")
 
         elif field_choice == '2':
             available = input("Available? (yes/no): ").lower() == 'yes'
