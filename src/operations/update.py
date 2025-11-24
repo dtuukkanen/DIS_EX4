@@ -29,7 +29,13 @@ class UpdateOperations:
                 print(f"Error: {e}")
 
         elif field_choice == '2':
-            new_total = float(input("New total amount: "))
+            while True:
+                new_total_input = input("New total amount: ")
+                try:
+                    new_total = float(new_total_input)
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter a numeric value for the total amount.")
             # Update in both databases
             try:
                 cur = self.db.postgres_conn.cursor()
