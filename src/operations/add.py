@@ -49,7 +49,13 @@ class AddOperations:
             # Add to MongoDB too
             try:
                 payment = input("Payment method: ")
-                tip = float(input("Tip amount: "))
+                while True:
+                    tip_input = input("Tip amount: ")
+                    try:
+                        tip = float(tip_input)
+                        break
+                    except ValueError:
+                        print("Invalid input. Please enter a numeric value for the tip amount.")
 
                 order_doc = {
                     "order_id": order_id,
