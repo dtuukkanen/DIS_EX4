@@ -63,10 +63,14 @@ class UpdateOperations:
                 except Exception as mongo_error:
                     # Rollback PostgreSQL if MongoDB update fails
                     if old_total is not None:
-                        cur.execute("UPDATE orders SET total_amount = %s WHERE order_id = %s",
-                                   (old_total, order_id))
-                        self.db.postgres_conn.commit()
-                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        try:
+                            cur.execute("UPDATE orders SET total_amount = %s WHERE order_id = %s",
+                                       (old_total, order_id))
+                            self.db.postgres_conn.commit()
+                            print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        except Exception as rollback_error:
+                            print(f"✗ MongoDB update failed AND rollback failed: {rollback_error}")
+                            print(f"⚠ WARNING: Database inconsistency detected! Manual intervention required.")
                     raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
@@ -109,10 +113,14 @@ class UpdateOperations:
                 except Exception as mongo_error:
                     # Rollback PostgreSQL if MongoDB update fails
                     if old_email is not None:
-                        cur.execute("UPDATE customers SET email = %s WHERE customer_id = %s",
-                                   (old_email, customer_id))
-                        self.db.postgres_conn.commit()
-                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        try:
+                            cur.execute("UPDATE customers SET email = %s WHERE customer_id = %s",
+                                       (old_email, customer_id))
+                            self.db.postgres_conn.commit()
+                            print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        except Exception as rollback_error:
+                            print(f"✗ MongoDB update failed AND rollback failed: {rollback_error}")
+                            print(f"⚠ WARNING: Database inconsistency detected! Manual intervention required.")
                     raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
@@ -148,10 +156,14 @@ class UpdateOperations:
                 except Exception as mongo_error:
                     # Rollback PostgreSQL if MongoDB update fails
                     if old_phone is not None:
-                        cur.execute("UPDATE customers SET phone = %s WHERE customer_id = %s",
-                                   (old_phone, customer_id))
-                        self.db.postgres_conn.commit()
-                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        try:
+                            cur.execute("UPDATE customers SET phone = %s WHERE customer_id = %s",
+                                       (old_phone, customer_id))
+                            self.db.postgres_conn.commit()
+                            print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        except Exception as rollback_error:
+                            print(f"✗ MongoDB update failed AND rollback failed: {rollback_error}")
+                            print(f"⚠ WARNING: Database inconsistency detected! Manual intervention required.")
                     raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
@@ -257,10 +269,14 @@ class UpdateOperations:
                 except Exception as mongo_error:
                     # Rollback PostgreSQL if MongoDB update fails
                     if old_price is not None:
-                        cur.execute("UPDATE menu_items SET price = %s WHERE item_id = %s",
-                                   (old_price, item_id))
-                        self.db.postgres_conn.commit()
-                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        try:
+                            cur.execute("UPDATE menu_items SET price = %s WHERE item_id = %s",
+                                       (old_price, item_id))
+                            self.db.postgres_conn.commit()
+                            print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        except Exception as rollback_error:
+                            print(f"✗ MongoDB update failed AND rollback failed: {rollback_error}")
+                            print(f"⚠ WARNING: Database inconsistency detected! Manual intervention required.")
                     raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
@@ -295,10 +311,14 @@ class UpdateOperations:
                 except Exception as mongo_error:
                     # Rollback PostgreSQL if MongoDB update fails
                     if old_available is not None:
-                        cur.execute("UPDATE menu_items SET available = %s WHERE item_id = %s",
-                                   (old_available, item_id))
-                        self.db.postgres_conn.commit()
-                        print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        try:
+                            cur.execute("UPDATE menu_items SET available = %s WHERE item_id = %s",
+                                       (old_available, item_id))
+                            self.db.postgres_conn.commit()
+                            print(f"✗ MongoDB update failed. PostgreSQL changes rolled back.")
+                        except Exception as rollback_error:
+                            print(f"✗ MongoDB update failed AND rollback failed: {rollback_error}")
+                            print(f"⚠ WARNING: Database inconsistency detected! Manual intervention required.")
                     raise mongo_error
             except Exception as e:
                 print(f"Error: {e}")
