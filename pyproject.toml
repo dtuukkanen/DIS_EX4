@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "dis-ex4"
 version = "0.1.0"
@@ -7,3 +11,12 @@ dependencies = [
     "psycopg[binary]>=3.2.13",
     "pymongo>=4.15.4",
 ]
+
+[project.scripts]
+restaurant = "src.app:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.uv]
+package = true

@@ -1,43 +1,37 @@
 services:
   postgres:
-    image: postgres:latest
-    container_name: postgres-db
-    restart: unless-stopped
+    image: postgres:16
+    container_name: restaurant_postgres
     environment:
       POSTGRES_USER: pguser
       POSTGRES_PASSWORD: pgpassword
-      POSTGRES_DB: wine_db
+      POSTGRES_DB: restaurant_db
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-      # Mount init SQL and CSV into the Postgres entrypoint init directory
-      - ./init_postgres.sql:/docker-entrypoint-initdb.d/01_init_postgres.sql:ro
-      - ./data/wine_food_pairings.csv:/docker-entrypoint-initdb.d/wine_food_pairings.csv:ro
+      - ./init_postgres.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pguser -d pgdatabase"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U pguser -d restaurant_db"]
+      interval: 5s
       timeout: 5s
       retries: 5
 
-  mongo:
-    image: mongo:latest
-    container_name: mongo-db
-    restart: unless-stopped
+  mongodb:
+    image: mongo:7
+    container_name: restaurant_mongo
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db
-      - ./data/wine_food_pairings.csv:/data/wine_food_pairings.csv:ro
-      - ./import-data.sh:/docker-entrypoint-initdb.d/00-import-data.sh:ro
-      - ./init_db_mongo.js:/docker-entrypoint-initdb.d/01-init.js:ro
+      - ./init_db_mongo.js:/docker-entrypoint-initdb.d/init.js:ro
+      - mongo_data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping').ok"]
-      interval: 10s
-      timeout: 10s
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
       retries: 5
-      start_period: 10s
 
 volumes:
-  postgres-data:
-  mongo-data:
+  postgres_data:
+  mongo_data:
+
