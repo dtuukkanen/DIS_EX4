@@ -1,6 +1,9 @@
 [project]
-name = "pythonproject"
+name = "dis-ex4"
 version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "psycopg[binary]>=3.2.13",
+    "pymongo>=4.15.4",
+]
