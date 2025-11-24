@@ -172,7 +172,16 @@ class AddOperations:
             customer_id = input("Customer ID: ")
             restaurant_id = input("Restaurant ID: ")
             order_id = input("Order ID: ")
-            rating = int(input("Rating (1-5): "))
+            while True:
+                rating_input = input("Rating (1-5): ")
+                try:
+                    rating = int(rating_input)
+                    if 1 <= rating <= 5:
+                        break
+                    else:
+                        print("Error: Rating must be an integer between 1 and 5.")
+                except ValueError:
+                    print("Error: Please enter a valid integer for the rating.")
             comment = input("Comment: ")
 
             review_doc = {
