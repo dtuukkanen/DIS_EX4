@@ -79,8 +79,7 @@ class UpdateOperations:
                 print(f"✓ Customer {customer_id} email updated")
             except Exception as e:
                 print(f"Error: {e}")
-            except Exception as e:
-                print(f"Error: {e}")
+
 
         elif field_choice == '2':
             new_phone = input("New phone: ")
@@ -90,12 +89,23 @@ class UpdateOperations:
                            (new_phone, customer_id))
                 self.db.postgres_conn.commit()
                 cur.close()
+
+                self.db.mongo_db.customers.update_one(
+                    {"customer_id": customer_id},
+                    {"$set": {"phone": new_phone}}
+                )
                 print(f"✓ Customer {customer_id} phone updated")
             except Exception as e:
                 print(f"Error: {e}")
 
         elif field_choice == '3':
-            points = int(input("New loyalty points: "))
+            while True:
+                points_input = input("New loyalty points: ")
+                try:
+                    points = int(points_input)
+                    break
+                except ValueError:
+                    print("Invalid input. Please enter a numeric value for loyalty points.")
             try:
                 self.db.mongo_db.customers.update_one(
                     {"customer_id": customer_id},
@@ -113,7 +123,16 @@ class UpdateOperations:
         field_choice = input("Select: ")
 
         if field_choice == '1':
-            new_rating = int(input("New rating (1-5): "))
+            while True:
+                rating_input = input("New rating (1-5): ")
+                try:
+                    new_rating = int(rating_input)
+                    if 1 <= new_rating <= 5:
+                        break
+                    else:
+                        print("Error: Rating must be an integer between 1 and 5.")
+                except ValueError:
+                    print("Error: Please enter a valid integer between 1 and 5.")
             try:
                 result = self.db.mongo_db.reviews.update_one(
                     {"review_id": review_id},
@@ -144,7 +163,13 @@ class UpdateOperations:
         field_choice = input("Select: ")
 
         if field_choice == '1':
-            new_price = float(input("New price: "))
+            while True:
+                new_price_input = input("New price: ")
+                try:
+                    new_price = float(new_price_input)
+                    break
+                except ValueError:
+                    print("Invalid price. Please enter a numeric value.")
             # Update in both databases
             try:
                 cur = self.db.postgres_conn.cursor()
