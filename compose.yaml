@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./init_postgres_new.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init_postgres.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U pguser -d restaurant_db"]
@@ -23,7 +23,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./init_db_mongo_new.js:/docker-entrypoint-initdb.d/init.js:ro
+      - ./init_db_mongo.js:/docker-entrypoint-initdb.d/init.js:ro
       - mongo_data:/data/db
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
